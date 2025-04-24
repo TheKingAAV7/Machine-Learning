@@ -1,0 +1,684 @@
+EDA
+Pandas Profiling: 
+!pip install ydata-profiling
+import pandas as pd
+from ydata_profiling import ProfileReport
+
+sns
+sns.pairplot(df)
+sns.boxplot(df)
+sns.distplot(df[x])
+sns.heatmap(df.corr(),annot=True)
+df['x'].value_counts().plot(kind='bar')
+df['Outcome'].value_counts().plot(kind='pie',autopct='%1.2f%%')
+sns.lineplot(x='Age',y='Pregnancies',data=df)
+sns.countplot(x='Outcome',data=df)
+
+
+Fill Na values:
+df['ColumnName'].fillna(df['ColumnName'].mean(), inplace=True)
+df['ColumnName'].fillna(df['ColumnName'].mode()[0], inplace=True)
+df['ColumnName'].fillna(df['ColumnName'].median(), inplace=True)
+
+Missing Indicators
+KNN Imputer
+MICE -> Multivariate Imputation using Chained Equations
+
+
+@One Hot Encoding
+pd.get_dummies(df,columns=['x','y'])
+pd.get_dummies(df,columns=['x','y'],dtype=int)
+
+@OrdinalEncoding
+encoder = OrdinalEncoder(categories=[['low', 'medium', 'high']]) 
+df['Category_encoded'] = encoder.fit_transform(df[['Category']])
+
+
+
+
+
+PREPRUNING , POSTPRUNING
+Confusion Matrix
+precision, recall, etc.
+
+
+
+Voting-> same models -> reg-mean() , clf=mode()
+
+CROSS val score
+gridsearchcv
+randomsearchcv
+
+
+
+
+Models:
+
+NB:
+from sklearn.naive_bayes import GaussianNB
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+
+# Load data
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+# Create Naive Bayes classifier
+nb = GaussianNB() = MultinomialNB()
+
+# Train the model
+nb.fit(X_train, y_train)
+
+# Evaluate accuracy
+print("Naive Bayes Accuracy:", nb.score(X_test, y_test))
+
+------------
+
+Kmeans :
+
+from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans
+wcss=[]
+for i in range(1,11):
+  model=KMeans(n_clusters=i)
+  model.fit(X)
+  wcss.append(model.inertia_)
+  plt.plot(range(1,11),wcss)
+model=KMeans(n_clusters=3)
+model.fit(X)
+ymeans=model.labels_
+plt.scatter(X[ymeans==0,0],X[ymeans==0,1],color='red')
+plt.scatter(X[ymeans==1,0],X[ymeans==1,1],color='blue')
+plt.scatter(X[ymeans==2,0],X[ymeans==2,1],color='yellow')
+
+
+Boosting
+------------
+Voting Classifier
+from sklearn.ensemble import VotingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+
+# Load data
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+# Define individual models
+clf1 = LogisticRegression()
+clf2 = KNeighborsClassifier()
+clf3 = DecisionTreeClassifier()
+
+# Create VotingClassifier
+voting_clf = VotingClassifier(estimators=[
+    ('lr', clf1), ('knn', clf2), ('dt', clf3)
+], voting='hard')  # 'soft' uses predict_proba
+
+voting_clf.fit(X_train, y_train)
+print("Voting Classifier Accuracy:", voting_clf.score(X_test, y_test))
+
+
+
+
+Voting Regressor
+
+from sklearn.ensemble import VotingRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.datasets import make_regression
+
+# Load regression data
+X, y = make_regression(n_samples=200, n_features=1, noise=10, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+# Define individual regressors
+reg1 = LinearRegression()
+reg2 = KNeighborsRegressor()
+reg3 = DecisionTreeRegressor()
+
+# Create VotingRegressor
+voting_reg = VotingRegressor(estimators=[
+    ('lr', reg1), ('knn', reg2), ('dt', reg3)
+])
+
+voting_reg.fit(X_train, y_train)
+print("Voting Regressor R^2 Score:", voting_reg.score(X_test, y_test))
+
+
+Bagging Classifier
+
+from sklearn.ensemble import BaggingClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+
+# Load data
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+# Create Bagging Classifier
+bag_clf = BaggingClassifier(
+    base_estimator=DecisionTreeClassifier(),  # base model
+    n_estimators=50,
+    random_state=42
+)
+
+bag_clf.fit(X_train, y_train)
+print("Bagging Classifier Accuracy:", bag_clf.score(X_test, y_test))
+
+
+Bagging Regressor
+from sklearn.ensemble import BaggingRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.datasets import make_regression
+
+# Load regression data
+X, y = make_regression(n_samples=200, n_features=1, noise=15, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+# Create Bagging Regressor
+bag_reg = BaggingRegressor(
+    base_estimator=DecisionTreeRegressor(),
+    n_estimators=50,
+    random_state=42
+)
+
+bag_reg.fit(X_train, y_train)
+print("Bagging Regressor R^2 Score:", bag_reg.score(X_test, y_test))
+
+
+AdaBoost Classifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+
+# Load data
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+# AdaBoost with decision stumps (1-level trees)
+ada = AdaBoostClassifier(
+    base_estimator=DecisionTreeClassifier(max_depth=1),
+    n_estimators=50,
+    random_state=42
+)
+
+ada.fit(X_train, y_train)
+print("AdaBoost Accuracy:", ada.score(X_test, y_test))
+
+
+AdaBoost Regressor
+from sklearn.ensemble import AdaBoostRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
+
+# Sample regression data
+X, y = make_regression(n_samples=200, n_features=1, noise=20, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+# AdaBoost Regressor with decision stumps
+ada_reg = AdaBoostRegressor(
+    base_estimator=DecisionTreeRegressor(max_depth=3),
+    n_estimators=50,
+    random_state=42
+)
+
+ada_reg.fit(X_train, y_train)
+print("AdaBoost R^2 Score:", ada_reg.score(X_test, y_test))
+
+GB 
+from sklearn.ensemble import GradientBoostingClassifier
+
+gbc = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, random_state=42)
+gbc.fit(X_train, y_train)
+print("Gradient Boosting Accuracy:", gbc.score(X_test, y_test))
+
+
+from sklearn.ensemble import GradientBoostingRegressor
+
+gbr = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, random_state=42)
+gbr.fit(X_train, y_train)
+print("Gradient Boosting R^2 Score:", gbr.score(X_test, y_test))
+
+XG
+
+from xgboost import XGBRegressor
+
+xgb_reg = XGBRegressor(n_estimators=100, learning_rate=0.1, random_state=42)
+xgb_reg.fit(X_train, y_train)
+print("XGBoost R^2 Score:", xgb_reg.score(X_test, y_test))
+
+
+Stacking
+
+Regressor
+from sklearn.ensemble import StackingRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
+
+# Load regression data
+X, y = make_regression(n_samples=200, n_features=1, noise=15, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+# Base models for stacking
+base_learners = [
+    ('lr', LinearRegression()),
+    ('knn', KNeighborsRegressor()),
+    ('dt', DecisionTreeRegressor(random_state=42))
+]
+
+# Meta-model (final model)
+meta_model = LinearRegression()
+
+# Create the Stacking Regressor
+stacking_reg = StackingRegressor(estimators=base_learners, final_estimator=meta_model)
+
+# Train the Stacking Regressor
+stacking_reg.fit(X_train, y_train)
+
+# Evaluate R^2 score
+print("Stacking Regressor R^2 Score:", stacking_reg.score(X_test, y_test))
+
+
+Classifier
+from sklearn.ensemble import StackingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+
+# Load data
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+# Base models for stacking
+base_learners = [
+    ('lr', LogisticRegression(max_iter=200)),
+    ('knn', KNeighborsClassifier()),
+    ('dt', DecisionTreeClassifier(random_state=42))
+]
+
+# Meta-model (final model)
+meta_model = LogisticRegression()
+
+# Create the Stacking Classifier
+stacking_clf = StackingClassifier(estimators=base_learners, final_estimator=meta_model)
+
+# Train the Stacking Classifier
+stacking_clf.fit(X_train, y_train)
+
+# Evaluate accuracy
+print("Stacking Classifier Accuracy:", stacking_clf.score(X_test, y_test))
+
+
+
+-----
+
+Decision tree
+-----
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+
+# Load data
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+# Create Decision Tree classifier
+dtc = DecisionTreeClassifier(random_state=42)
+
+# Train the model
+dtc.fit(X_train, y_train)
+
+# Evaluate the model
+print("Decision Tree Accuracy:", dtc.score(X_test, y_test))
+
+# Plot the decision tree
+plt.figure(figsize=(12, 8))
+plot_tree(dtc, filled=True, feature_names=["Sepal length", "Sepal width", "Petal length", "Petal width"], class_names=["Setosa", "Versicolor", "Virginica"], rounded=True)
+plt.title("Decision Tree for Iris Dataset")
+plt.show()
+-----
+
+
+
+---------------------
+ANN
+
+regression,
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# Load regression data (you can use your own dataset)
+X, y = make_regression(n_samples=200, n_features=1, noise=20, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Scale the features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Create ANN model
+model = Sequential()
+
+# Add input layer and first hidden layer
+model.add(Dense(units=64, activation='relu', input_dim=X_train.shape[1]))  # You can change the number of neurons here
+
+# Add additional hidden layers (you can adjust layers and neurons)
+# model.add(Dense(units=32, activation='relu'))  # Uncomment for additional layer
+
+# Add output layer
+model.add(Dense(units=1))  # Output is a single continuous value for regression
+
+# Compile the model
+model.compile(
+    optimizer='adam',  # You can try 'sgd', 'rmsprop', etc.
+    loss='mean_squared_error',  # Options: 'mean_absolute_error', 'mean_squared_error', etc.
+    metrics=['mae']  # Metrics: 'mae', 'mse', etc.
+)
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test))
+
+# Evaluate the model
+test_loss, test_mae = model.evaluate(X_test, y_test)
+print(f"Test Loss: {test_loss}, Test MAE: {test_mae}")
+
+# Make predictions
+predictions = model.predict(X_test)
+
+
+Binary  Classification
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+
+# Load data
+X, y = load_iris(return_X_y=True)
+
+# For binary classification, we only take the Setosa class (class 0) vs others (class 1)
+y = (y == 0).astype(int)  # Convert to binary labels (Setosa vs Non-Setosa)
+
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Scale the features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Create ANN model
+model = Sequential()
+
+# Add input layer and first hidden layer
+model.add(Dense(units=64, activation='relu', input_dim=X_train.shape[1]))
+
+# Add output layer (1 unit because we are doing binary classification)
+model.add(Dense(units=1, activation='sigmoid'))  # Sigmoid function for binary output
+
+# Compile the model
+model.compile(
+    optimizer='adam',  # You can try 'sgd', 'rmsprop', etc.
+    loss='binary_crossentropy',  # Binary cross-entropy for binary classification
+    metrics=['accuracy']  # Use accuracy as the metric
+)
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test))
+
+# Evaluate the model
+test_loss, test_acc = model.evaluate(X_test, y_test)
+print(f"Test Loss: {test_loss}, Test Accuracy: {test_acc}")
+
+# Make predictions (output between 0 and 1, which you can threshold)
+predictions = model.predict(X_test)
+predictions = (predictions > 0.5).astype(int)  # Convert to binary labels (0 or 1)
+
+print("Predictions:", predictions[:10])  # Show the first 10 predictions
+
+---------------------------
+
+
+Multiclass calssification
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from tensorflow.keras.utils import to_categorical
+
+# Load data
+X, y = load_iris(return_X_y=True)
+
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Scale the features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Convert labels to one-hot encoding (for multiclass classification)
+y_train = to_categorical(y_train, num_classes=3)
+y_test = to_categorical(y_test, num_classes=3)
+
+# Create ANN model
+model = Sequential()
+
+# Add input layer and first hidden layer
+model.add(Dense(units=64, activation='relu', input_dim=X_train.shape[1]))
+
+# Add another hidden layer (optional)
+# model.add(Dense(units=32, activation='relu'))  # Uncomment for additional hidden layer
+
+# Add output layer (3 units for 3 classes)
+model.add(Dense(units=3, activation='softmax'))  # Softmax activation for multiclass classification
+
+# Compile the model
+model.compile(
+    optimizer='adam',  # You can try 'sgd', 'rmsprop', etc.
+    loss='categorical_crossentropy',  # Categorical cross-entropy for multiclass classification
+    metrics=['accuracy']  # Use accuracy as the metric
+)
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test))
+
+# Evaluate the model
+test_loss, test_acc = model.evaluate(X_test, y_test)
+print(f"Test Loss: {test_loss}, Test Accuracy: {test_acc}")
+
+# Make predictions (output is a probability distribution over the 3 classes)
+predictions = model.predict(X_test)
+predictions = predictions.argmax(axis=1)  # Convert probabilities to class labels
+
+print("Predictions:", predictions[:10])  # Show the first 10 predictions
+----
+
+
+Linear Regression
+--
+from sklearn.linear_model import Lasso, Ridge, ElasticNet
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler
+
+# Create synthetic regression data (replace with your dataset)
+X, y = make_regression(n_samples=200, n_features=3, noise=20, random_state=42)
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Standardize the features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# 1. Lasso Regression (L1 Regularization)
+lasso = Lasso(alpha=0.1)  # Alpha controls the strength of regularization
+lasso.fit(X_train, y_train)
+
+# Predict and evaluate
+lasso_pred = lasso.predict(X_test)
+lasso_mse = mean_squared_error(y_test, lasso_pred)
+print("Lasso (L1) Mean Squared Error:", lasso_mse)
+
+# 2. Ridge Regression (L2 Regularization)
+ridge = Ridge(alpha=0.1)  # Alpha controls the strength of regularization
+ridge.fit(X_train, y_train)
+
+# Predict and evaluate
+ridge_pred = ridge.predict(X_test)
+ridge_mse = mean_squared_error(y_test, ridge_pred)
+print("Ridge (L2) Mean Squared Error:", ridge_mse)
+
+# 3. ElasticNet Regression (Combination of L1 and L2 Regularization)
+elasticnet = ElasticNet(alpha=0.1, l1_ratio=0.5)  # l1_ratio = 0.5 means equal mix of L1 and L2
+elasticnet.fit(X_train, y_train)
+
+# Predict and evaluate
+elasticnet_pred = elasticnet.predict(X_test)
+elasticnet_mse = mean_squared_error(y_test, elasticnet_pred)
+print("ElasticNet Mean Squared Error:", elasticnet_mse)
+----
+
+
+
+#Regression Metrics
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, mean_squared_log_error, median_absolute_error
+
+# Example: y_test and y_pred are your true values and predicted values
+# (Replace with your actual predictions and true values)
+y_test = [3.0, 2.5, 4.0, 5.1, 6.3]  # True values
+y_pred = [2.9, 2.4, 4.2, 5.0, 6.0]  # Predicted values
+
+# Mean Absolute Error (MAE)
+mae = mean_absolute_error(y_test, y_pred)
+print(f"Mean Absolute Error (MAE): {mae}")
+
+# Mean Squared Error (MSE)
+mse = mean_squared_error(y_test, y_pred)
+print(f"Mean Squared Error (MSE): {mse}")
+
+# Root Mean Squared Error (RMSE)
+rmse = mean_squared_error(y_test, y_pred, squared=False)
+print(f"Root Mean Squared Error (RMSE): {rmse}")
+
+# R-squared (R2) Score
+r2 = r2_score(y_test, y_pred)
+print(f"R-squared (R2) Score: {r2}")
+
+# Mean Squared Logarithmic Error (MSLE)
+msle = mean_squared_log_error(y_test, y_pred)
+print(f"Mean Squared Logarithmic Error (MSLE): {msle}")
+
+# Median Absolute Error
+medae = median_absolute_error(y_test, y_pred)
+print(f"Median Absolute Error: {medae}")
+
+
+
+#Classification
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
+
+# Example: y_test and y_pred are your true values and predicted values
+# (Replace with your actual predictions and true values)
+y_test = [1, 0, 1, 1, 0, 1, 0, 1, 0, 1]  # True values (binary labels)
+y_pred = [1, 0, 1, 0, 0, 1, 0, 1, 0, 0]  # Predicted values (binary labels)
+
+# Accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy}")
+
+# Precision (Positive class is considered as 1)
+precision = precision_score(y_test, y_pred)
+print(f"Precision: {precision}")
+
+# Recall (True Positive Rate)
+recall = recall_score(y_test, y_pred)
+print(f"Recall: {recall}")
+
+# F1 Score (Harmonic mean of Precision and Recall)
+f1 = f1_score(y_test, y_pred)
+print(f"F1 Score: {f1}")
+
+# Confusion Matrix
+conf_matrix = confusion_matrix(y_test, y_pred)
+print(f"Confusion Matrix:\n{conf_matrix}")
+
+# ROC AUC (Area Under the Receiver Operating Characteristic Curve)
+roc_auc = roc_auc_score(y_test, y_pred)
+print(f"ROC AUC: {roc_auc}")
+
+# ROC Curve (Plotting)
+fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+plt.plot(fpr, tpr, label=f"ROC curve (area = {roc_auc:.2f})")
+plt.plot([0, 1], [0, 1], linestyle="--", label="Random Classifier")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("Receiver Operating Characteristic (ROC) Curve")
+plt.legend(loc="lower right")
+plt.show()
+
+
+#imputation 
+from sklearn.impute import SimpleImputer, KNNImputer
+import pandas as pd
+import numpy as np
+
+# Sample data
+X = pd.DataFrame([[1, 2], [np.nan, 3], [7, np.nan]])
+
+# 1. Mean Imputation
+X_mean = SimpleImputer(strategy='mean').fit_transform(X)
+
+# 2. Median Imputation
+X_median = SimpleImputer(strategy='median').fit_transform(X)
+
+# 3. Most Frequent Imputation (mode)
+X_mode = SimpleImputer(strategy='most_frequent').fit_transform(X)
+
+# 4. Constant Imputation
+X_const = SimpleImputer(strategy='constant', fill_value=0).fit_transform(X)
+
+# 5. KNN Imputer
+X_knn = KNNImputer(n_neighbors=2).fit_transform(X)
+
+
+//label
+
+
+from sklearn.preprocessing import LabelEncoder
+
+# Sample data
+labels = ['red', 'green', 'blue', 'green', 'red']
+
+# Apply Label Encoding
+le = LabelEncoder()
+encoded = le.fit_transform(labels)
+
+print(encoded)  # Output: [2 1 0 1 2]
+
